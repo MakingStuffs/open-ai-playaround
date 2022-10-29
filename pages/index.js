@@ -3,23 +3,31 @@ import { useState } from "react";
 import styles from "./index.module.css";
 
 export default function Home() {
+  const [loading, setLoading] = useState(false);
   const [humanInput, setHumanInput] = useState("");
   const [responses, setResponses] = useState([]);
   const [humanMessages, setHumanMessages] = useState([]);
 
   async function onSubmit(event) {
-    event.preventDefault();
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ human: humanInput }),
-    });
-    const data = await response.json();
-    setResponses(responses.concat(data.result));
-    setHumanMessages(humanMessages.concat(humanInput));
-    setHumanInput("");
+    try {
+      setLoading(true);
+      event.preventDefault();
+      const response = await fetch("/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ human: humanInput }),
+      });
+      const data = await response.json();
+      setResponses(responses.concat(data.result));
+      setHumanMessages(humanMessages.concat(humanInput));
+      setHumanInput("");
+      setLoading(false);
+    } catch (e) {
+      console.warn(e);
+      setLoading(false);
+    }
   }
 
   return (
@@ -27,8 +35,8 @@ export default function Home() {
       <Head>
         <title>Offensive ChatBot</title>
       </Head>
-
       <main className={styles.main}>
+        <span className={styles.loader} aria-hidden={!loading}></span>
         <header className={styles.header}>
           <h3>Talk to me, you dick</h3>
           <form onSubmit={onSubmit}>
