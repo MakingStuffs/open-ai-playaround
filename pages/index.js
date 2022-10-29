@@ -17,11 +17,14 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ human: humanInput }),
+        body: JSON.stringify({
+          human: humanMessages.concat(`Human: ${humanInput}`),
+          ai: responses,
+        }),
       });
       const data = await response.json();
       setResponses(responses.concat(data.result));
-      setHumanMessages(humanMessages.concat(humanInput));
+      setHumanMessages(humanMessages.concat(`Human: ${humanInput}`));
       setHumanInput("");
       setLoading(false);
     } catch (e) {
@@ -57,8 +60,8 @@ export default function Home() {
                 className={styles.result}
                 key={Math.random().toString(36).substring(2, 9)}
               >
-                <span>{`You: ${message}`}</span>
-                <span>{responses[i]}</span>
+                <span>{`${message}`}</span>
+                <span>{responses[i] || ""}</span>
               </li>
             ))}
           </ul>
